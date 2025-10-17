@@ -18,7 +18,7 @@ import time
 # -------------------------------------------------------------------
 # 1. Load and Filter Dataset
 # -------------------------------------------------------------------
-print("📘 Loading dataset...")
+print(" Loading dataset...")
 dataset = load_dataset("rajpurkar/squad")
 
 def filter_beyonce_kanye(example):
@@ -26,13 +26,13 @@ def filter_beyonce_kanye(example):
 
 print("🎤 Filtering Beyoncé & Kanye West examples...")
 dataset = dataset.filter(filter_beyonce_kanye)
-print(f"✅ Filtered dataset: Train={len(dataset['train'])}, Val={len(dataset['validation'])}")
+print(f" Filtered dataset: Train={len(dataset['train'])}, Val={len(dataset['validation'])}")
 
 # Combine train + validation, then resplit to ensure both have data
 combined = dataset["train"].train_test_split(test_size=0.2, seed=42)
 train_data = combined["train"]
 val_data = combined["test"]
-print(f"📊 Final Split — Train: {len(train_data)}, Validation: {len(val_data)}")
+print(f" Final Split — Train: {len(train_data)}, Validation: {len(val_data)}")
 
 # -------------------------------------------------------------------
 # 2. Load Model and Tokenizer
@@ -107,7 +107,7 @@ def preprocess_function(examples):
     inputs.pop("offset_mapping")
     return inputs
 
-print("🔄 Tokenizing and processing dataset...")
+print(" Tokenizing and processing dataset...")
 train_dataset = train_data.map(preprocess_function, batched=True)
 eval_dataset = val_data.map(preprocess_function, batched=True)
 
@@ -169,7 +169,7 @@ trainer.train()
 # 8. Save Model
 # -------------------------------------------------------------------
 model.save_pretrained("./beyonce_kanye_peft_qa_model")
-print("✅ Training complete! Model saved to './beyonce_kanye_peft_qa_model'")
+print(" Training complete! Model saved to './beyonce_kanye_peft_qa_model'")
 
 # -------------------------------------------------------------------
 # 9. Testing the Model
@@ -242,7 +242,7 @@ for example in tqdm(eval_dataset, desc="Evaluating", ncols=100):
 
 results = squad_metric.compute(predictions=predictions, references=references)
 
-print("\n📊 Evaluation Results:")
+print("\n Evaluation Results:")
 print(f"Exact Match (EM): {results['exact_match']:.2f}")
 print(f"F1 Score: {results['f1']:.2f}")
 
@@ -294,10 +294,10 @@ df_sorted = df.sort_values(by="F1", ascending=True)
 
 # Display the 10 worst predictions
 for _, row in df_sorted.head(10).iterrows():
-    print(f"❓ Question: {row['question']}")
-    print(f"📚 Context: {row['context'][:250]}...")
-    print(f"✅ True Answer: {row['true_answer']}")
-    print(f"❌ Predicted: {row['predicted_answer']}")
+    print(f" Question: {row['question']}")
+    print(f" Context: {row['context'][:250]}...")
+    print(f" True Answer: {row['true_answer']}")
+    print(f" Predicted: {row['predicted_answer']}")
     print(f"F1: {row['F1']:.2f}, EM: {row['EM']:.2f}")
     print("—" * 80)
 # -------------------------------------------------------------------
@@ -374,8 +374,9 @@ for qtype, scores in grouped_scores.items():
 # Convert to DataFrame
 df_summary = pd.DataFrame(summary).sort_values(by="Avg F1", ascending=False)
 
-print("\n📊 Performance by Question Type (LoRA):")
+print("\n Performance by Question Type (LoRA):")
 print(df_summary.to_string(index=False, formatters={
     "Avg F1": "{:.2f}".format,
     "Avg EM": "{:.2f}".format,
+
 }))
