@@ -18,7 +18,7 @@ import time
 # -------------------------------------------------------------------
 # 1. Load and Filter Dataset
 # -------------------------------------------------------------------
-print("📘 Loading dataset...")
+print("Loading dataset...")
 dataset = load_dataset("rajpurkar/squad")
 
 def filter_beyonce_kanye(example):
@@ -40,7 +40,7 @@ print(f" Final Split — Train: {len(train_data)}, Validation: {len(val_data)}")
 model_name = "distilbert-base-uncased-distilled-squad"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForQuestionAnswering.from_pretrained(model_name)
-print(f"📦 Loaded model: {model_name}")
+print(f" Loaded model: {model_name}")
 
 # -------------------------------------------------------------------
 # 3. Apply IA³ (PEFT)
@@ -103,7 +103,7 @@ def preprocess_function(examples):
     inputs.pop("offset_mapping")
     return inputs
 
-print("🔄 Tokenizing and processing dataset...")
+print(" Tokenizing and processing dataset...")
 train_dataset = train_data.map(preprocess_function, batched=True)
 eval_dataset = val_data.map(preprocess_function, batched=True)
 
@@ -142,7 +142,7 @@ trainer.train()
 # 7. Save Model
 # -------------------------------------------------------------------
 model.save_pretrained("./beyonce_kanye_ia3_model")
-print("✅ Training complete! Model saved to './beyonce_kanye_ia3_model'")
+print(" Training complete! Model saved to './beyonce_kanye_ia3_model'")
 
 # -------------------------------------------------------------------
 # 8. Evaluate IA³ Model — EM, F1, and Error Analysis
@@ -152,7 +152,7 @@ from tqdm import tqdm
 import evaluate
 import pandas as pd
 
-print("📊 Running evaluation on validation dataset...")
+print(" Running evaluation on validation dataset...")
 qa_pipeline = pipeline("question-answering", model=model, tokenizer=tokenizer)
 
 predictions = []
@@ -169,13 +169,13 @@ for example in tqdm(val_data):
     predictions.append(pred_text)
     references.append(true_answers[0].strip() if len(true_answers) > 0 else "")
 
-# ✅ Compute EM & F1 using the official SQuAD metric
+#  Compute EM & F1 using the official SQuAD metric
 metric = evaluate.load("squad")
 formatted_predictions = [{"id": str(i), "prediction_text": p} for i, p in enumerate(predictions)]
 formatted_references = [{"id": str(i), "answers": {"text": [r], "answer_start": [0]}} for i, r in enumerate(references)]
 results = metric.compute(predictions=formatted_predictions, references=formatted_references)
 
-print("\n📊 Evaluation Results:")
+print("\n Evaluation Results:")
 print(f"Exact Match (EM): {results['exact_match']:.2f}")
 print(f"F1 Score: {results['f1']:.2f}")
 
@@ -203,10 +203,10 @@ df = pd.DataFrame(detailed_results)
 df_sorted = df.sort_values(by="F1", ascending=True)
 
 for _, row in df_sorted.head(5).iterrows():
-    print(f"\n❓ Question: {row['question']}")
-    print(f"📚 Context: {row['context'][:500]}...")
-    print(f"✅ True Answer: {row['true_answer']}")
-    print(f"❌ Predicted: {row['predicted_answer']}")
+    print(f"\n Question: {row['question']}")
+    print(f" Context: {row['context'][:500]}...")
+    print(f" True Answer: {row['true_answer']}")
+    print(f" Predicted: {row['predicted_answer']}")
     print(f"F1: {row['F1']:.2f}, EM: {row['EM']:.2f}")
     print("—" * 80)
 
@@ -234,7 +234,7 @@ print_trainable_parameters(model)
 from collections import defaultdict
 import re
 
-print("\n🔍 Segmenting IA³ evaluation results by question type...")
+print("\n Segmenting IA³ evaluation results by question type...")
 
 # Simple function to identify question type
 def get_question_type(question):
@@ -269,8 +269,9 @@ for qtype, scores in grouped_scores.items():
 # Convert to DataFrame and display nicely
 df_summary = pd.DataFrame(summary).sort_values(by="Avg F1", ascending=False)
 
-print("\n📊 IA³ Performance by Question Type (IA3):")
+print("\n IA³ Performance by Question Type (IA3):")
 print(df_summary.to_string(index=False, formatters={
     "Avg F1": "{:.2f}".format,
     "Avg EM": "{:.2f}".format,
+
 }))
